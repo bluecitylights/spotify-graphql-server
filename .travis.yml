@@ -8,10 +8,6 @@ services:
   - docker
 
 before_install:
-  - echo $TRAVIS_BRANCH
-  - echo $DOCKER_EMAIL
-  - echo $DOCKER_USERNAME
-  - echo $DOCKER_PASSWORD
   - docker build -t bluecitylights/spotify-graphql .
   
 
@@ -23,7 +19,7 @@ script:
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push bluecitylights/spotify-graphql;
     fi
   
