@@ -2,16 +2,24 @@ language: node_js
 node_js:
   - "stable"
 
-sudo: false
+sudo: required
 
-before_script:
+services:
+  - docker
+
+before_install:
+  - docker build -t bluecitylights/spotify-graphql
   
 
 install:
-  npm install
+  npm install && npm run test
 
 script:
-  npm test
+  - docker images bluecitylights/spotify-graphql
 
 after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push bluecitylights/spotify-graphql;
+    fi
   
