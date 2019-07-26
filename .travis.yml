@@ -8,6 +8,10 @@ services:
   - docker
 
 before_install:
+  - echo $TRAVIS_BRANCH
+  - echo $DOCKER_EMAIL
+  - echo $DOCKER_USERNAME
+  - echo $DOCKER_PASSWORD
   - docker build -t bluecitylights/spotify-graphql .
   
 
