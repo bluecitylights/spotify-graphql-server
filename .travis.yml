@@ -8,14 +8,14 @@ services:
   - docker
 
 before_install:
-  - docker build -t bluecitylights/spotify-graphql .
+  - docker build -t $DOCKER_USERNAME"/spotify-graphql .
   
 
 install:
   npm install && npm run test
 
 script:
-  - docker images bluecitylights/spotify-graphql
+  - docker images $DOCKER_USERNAME"/spotify-graphql
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
