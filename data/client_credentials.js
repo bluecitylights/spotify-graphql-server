@@ -19,7 +19,7 @@ const {
     CLIENT_SECRET = 'invalid'
 } = process.env;
 
-const authorizationHeader = () => 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'));
+const authorizationHeader = () => 'Basic ' + (Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'));
 
 const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
