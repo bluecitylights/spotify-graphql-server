@@ -8,7 +8,8 @@ const schema = buildSchema(`
 type Query {
   # Just returns "Hello world!"
   hi(message: String = "Hi"): String
-  queryArtists(byName: String = "Red Hot Chili Peppers"): [Artist]
+  Artists(byName: String = "Red Hot Chili Peppers"): [Artist]
+  Playlists(limit: Int = 20, offset: Int = 1): [Playlist]
 }
 type Artist {
   name: String!
@@ -27,6 +28,13 @@ type Track {
   artists: [Artist]
   preview_url: String
   id: ID
+},
+type Playlist {
+  name: String
+  id: ID,
+  image: String
+  collaborative: Boolean
+  tracks: [Track]
 }
 `);
 
