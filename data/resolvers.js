@@ -49,6 +49,7 @@ const haveHeadersWithAuthToken = async () => {
 };
 
 
+
 module.exports.fetchArtistsByName = async (name) => {
     console.log(`debug: query artist ${name} `);
 
@@ -96,6 +97,26 @@ const fetchPlaylistsOfUser = async (args) => {
 
 module.exports.fetchPlaylistsOfUser = fetchPlaylistsOfUser;
 
+const fetchSongsFromPlaylist = async (args) => {
+    limit = args.limit;
+    offset = args.offset;
+    playlistId = args.id;
+    console.log(`fetch songs, playlustId: ${playlistId}, limt:${limit}, offset:${offset}`);
+
+    userId = process.env.SPOTIFY_USER_ID;
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limit}&offset=${offset}`, {
+        headers: await haveHeadersWithAuthToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    return (data.items || [])
+        .map(trackRaw => spotifyJsonToTrack(trackRaw));
+    
+}
+
+module.exports.fetchSongsFromPlaylist = fetchSongsFromPlaylist;
+
 const spotifyJsonToArtist = async (raw) => {
     return {
         // fills with raw data (by ES6 spread operator):
@@ -133,6 +154,14 @@ const spotifyJsonToPlaylist = (playlistRaw) => {
     return {
         ...playlistRaw,
         image: playlistRaw.images[0] ? playlistRaw.images[0].url : '',
-        tracks: []
+        tracks: (args, object) => {
+            return fetchSongsFromPlaylist({id:playlistRaw.id, limit:5, offset:0});
+        }
     };
+}
+
+const spotifyJsonToTrack = (trackRaw) => {
+    return {
+        ...trackRaw.track
+    }
 }
