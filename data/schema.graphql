@@ -2,7 +2,7 @@
 
 type Query {
   me: User
-  user(id: ID): User
+  user(id: ID): PublicUser
   artists(byName: String = "Red Hot Chili Peppers"): [Artist]
   playlists(userId: ID, limit: Int = 20, offset: Int = 1): [Playlist]
 }
@@ -10,7 +10,15 @@ type User {
   display_name: String
   id: ID
   image: String
-  playlists: [Playlist]
+  playlists(limit: Int = 5, offset: Int = 0): [Playlist]
+  topTracks(timeRange: TimeRange, limit: Int = 5, offset: Int = 0): [Track]
+  topArtists(timeRange: TimeRange, limit: Int = 5, offset: Int = 0): [Artist]
+}
+type PublicUser {
+  display_name: String
+  id: ID
+  image: String
+  playlists(limit: Int = 5, offset: Int = 0): [Playlist]
 }
 type Artist {
   name: String!
@@ -36,4 +44,9 @@ type Playlist {
   image: String
   collaborative: Boolean
   tracks: [Track]
+}
+enum TimeRange {
+  short_term
+  medium_term
+  long_term
 }
