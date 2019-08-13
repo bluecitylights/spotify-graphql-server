@@ -37,6 +37,7 @@ type Track {
   artists: [Artist]
   preview_url: String
   id: ID
+  lyrics: String
 },
 type Playlist {
   name: String
