@@ -9,7 +9,6 @@ const routes = require('./routes/index');
 
 const expressGraphQL = require('express-graphql');
 const schema = require('./data/schema');
-const { fetchArtistsByName, fetchPlaylistsOfUser, fetchMe, fetchUser } = require('./data/resolvers');
 
 const app = express();
 
@@ -32,19 +31,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
 
-const rootValue = {
-    me: () => fetchMe(),
-    user: (args) => fetchUser(args),
-    artists: ({ byName }) => fetchArtistsByName(byName),
-    playlists: (args) => fetchPlaylistsOfUser(args)
-};
-
 // API middleware
 
 app.use('/graphql', cors(), expressGraphQL(req => ({
     schema,
     graphiql: true,
-    rootValue,
     pretty: process.env.NODE_ENV !== 'production',
 })));
 

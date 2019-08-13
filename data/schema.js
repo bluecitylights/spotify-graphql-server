@@ -1,47 +1,23 @@
-let {
-    buildSchema
-} = require('graphql');
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
+const graphqlHTTP = require('express-graphql');
+const { makeExecutableSchema } = require('graphql-tools');
 
-const schema = buildSchema(`
-# The root of all queries:
+const schemaFile = path.join(__dirname, 'schema.graphql');
+const typeDefs = fs.readFileSync(schemaFile, 'utf8');
 
-type Query {
-  me: User
-  user(id: ID): User
-  artists(byName: String = "Red Hot Chili Peppers"): [Artist]
-  playlists(userId: ID, limit: Int = 20, offset: Int = 1): [Playlist]
-}
-type User {
-  display_name: String
-  id: ID
-  image: String
-  playlists: [Playlist]
-}
-type Artist {
-  name: String!
-  id: ID
-  image: String
-  albums(limit: Int = 10): [Album]
-}
-type Album {
-  name: String
-  id: ID
-  image: String
-  tracks: [Track]
-}
-type Track {
-  name: String!
-  artists: [Artist]
-  preview_url: String
-  id: ID
-},
-type Playlist {
-  name: String
-  id: ID,
-  image: String
-  collaborative: Boolean
-  tracks: [Track]
-}
-`);
+const { fetchArtistsByName, fetchPlaylistsOfUser, fetchMe, fetchUser } = require('./resolvers');
+
+const resolvers = {
+  Query: {
+    me: (parent,args,ctx,info) => fetchMe(),
+    user: (parent,args,ctx,info) => fetchUser(args),
+    artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
+    playlists: (parent,args,ctx,info) => fetchPlaylistsOfUser(args)
+  }
+};
+
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 module.exports = schema;
