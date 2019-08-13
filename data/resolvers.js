@@ -48,6 +48,48 @@ const haveHeadersWithAuthToken = async () => {
     return await spotifyProxy()
 };
 
+const haveHeadersWithMyToken = async () => 
+{
+    return {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + process.env.SPOTIFY_USER_TOKEN
+    };
+}
+
+const fetchMe = async () => {
+    console.log(`fetch me`);
+
+    const response = await fetch(`https://api.spotify.com/v1/me`, {
+        headers: await haveHeadersWithMyToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    return spotifyJsonToUser(data);
+}
+
+module.exports.fetchMe = fetchMe;
+
+const fetchUser = async(args) => {
+    console.log(`fetch user ${args.id}`);
+
+    const response = await fetch(`https://api.spotify.com/v1/users/${args.id}`, {
+        headers: await haveHeadersWithAuthToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    return spotifyJsonToUser(data);
+}
+
+module.exports.fetchUser = fetchUser;
+
+const spotifyJsonToUser = (userRaw) => {
+    return {
+        ...userRaw,
+        playlists: fetchPlaylistsOfUser({userId:userRaw.id, limit:5, offset:0})
+    }
+}
 
 
 module.exports.fetchArtistsByName = async (name) => {
@@ -81,9 +123,9 @@ module.exports.fetchAlbumsOfArtist = fetchAlbumsOfArtist;
 const fetchPlaylistsOfUser = async (args) => {
     limit = args.limit;
     offset = args.offset;
+    userId = args.userId;
     console.log(`fetch playlists, limt:${limit}, offset:${offset}`);
 
-    userId = process.env.SPOTIFY_USER_ID;
     const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=${limit}&offset=${offset}`, {
         headers: await haveHeadersWithAuthToken()
     });
@@ -103,7 +145,6 @@ const fetchSongsFromPlaylist = async (args) => {
     playlistId = args.id;
     console.log(`fetch songs, playlustId: ${playlistId}, limt:${limit}, offset:${offset}`);
 
-    userId = process.env.SPOTIFY_USER_ID;
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limit}&offset=${offset}`, {
         headers: await haveHeadersWithAuthToken()
     });

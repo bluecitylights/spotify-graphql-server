@@ -9,7 +9,7 @@ const routes = require('./routes/index');
 
 const expressGraphQL = require('express-graphql');
 const schema = require('./data/schema');
-const { fetchArtistsByName, fetchPlaylistsOfUser } = require('./data/resolvers');
+const { fetchArtistsByName, fetchPlaylistsOfUser, fetchMe, fetchUser } = require('./data/resolvers');
 
 const app = express();
 
@@ -33,9 +33,10 @@ app.use('/', routes);
 
 
 const rootValue = {
-    hi: () => 'Hello world!',
-    Artists: ({ byName }) => fetchArtistsByName(byName),
-    Playlists: (args) => fetchPlaylistsOfUser(args)
+    me: () => fetchMe(),
+    user: (args) => fetchUser(args),
+    artists: ({ byName }) => fetchArtistsByName(byName),
+    playlists: (args) => fetchPlaylistsOfUser(args)
 };
 
 // API middleware
