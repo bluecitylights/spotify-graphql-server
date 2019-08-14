@@ -48,6 +48,101 @@ const haveHeadersWithAuthToken = async () => {
     return await spotifyProxy()
 };
 
+const haveHeadersWithMyToken = async () => 
+{
+    return {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + process.env.SPOTIFY_USER_TOKEN
+    };
+}
+
+const fetchMe = async () => {
+    console.log(`fetch me`);
+
+    const response = await fetch(`https://api.spotify.com/v1/me`, {
+        headers: await haveHeadersWithMyToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    return data;//spotifyJsonToUser(data);
+}
+
+module.exports.fetchMe = fetchMe;
+
+const fetchMyTopTracks = async (args) => {
+    limit = args.limit;
+    offset = args.offset;
+    time_range = args.timeRange;
+    console.log(`fetch my top tracks, limt:${limit}, offset:${offset}, time_range:${time_range}`);
+    let request = `https://api.spotify.com/v1/me/top/tracks?time_range=${time_range}&limit=${limit}&offset=${offset}`;
+    console.log(request);
+    const response = await fetch(request, {
+        headers: await haveHeadersWithMyToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    console.log(`toptracks found ${data.items.length}`)
+    return (data.items || [])
+        .map(trackRaw => spotifyJsonToTrack(trackRaw));
+    
+}
+
+module.exports.fetchMyTopTracks = fetchMyTopTracks;
+
+const fetchMyTopArtists = async (args) => {
+    limit = args.limit;
+    offset = args.offset;
+    time_range = args.timeRange;
+    console.log(`fetch my top artisits, limt:${limit}, offset:${offset}, time_range:${time_range}`);
+    let request = `https://api.spotify.com/v1/me/top/artists?time_range=${time_range}&limit=${limit}&offset=${offset}`;
+    console.log(request);
+    const response = await fetch(request, {
+        headers: await haveHeadersWithMyToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    console.log(`top artists found ${data.items.length}`)
+    return (data.items || [])
+        .map(trackRaw => spotifyJsonToArtist(trackRaw));
+    
+}
+
+module.exports.fetchMyTopArtists = fetchMyTopArtists;
+
+const fetchPublicUser = async(args) => {
+    console.log(`fetch user ${args.id}`);
+
+    const response = await fetch(`https://api.spotify.com/v1/users/${args.id}`, {
+        headers: await haveHeadersWithAuthToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    //return spotifyJsonToPublicUser(data);
+    return data;
+}
+
+module.exports.fetchPublicUser = fetchPublicUser;
+
+const spotifyJsonToUser = (userRaw) => {
+    return {
+        ...userRaw
+        // ...userRaw,
+        // playlists: fetchPlaylistsOfUser({userId:userRaw.id, limit:5, offset:0})
+    }
+}
+
+const spotifyJsonToPublicUser = (userRaw) => {
+    return {
+        ...userRaw
+        // ...userRaw,
+        // playlists: fetchPlaylistsOfUser({userId:userRaw.id, limit:5, offset:0})
+    }
+}
+
 
 module.exports.fetchArtistsByName = async (name) => {
     console.log(`debug: query artist ${name} `);
@@ -76,6 +171,62 @@ const fetchAlbumsOfArtist = async (artistId, limit) => {
 };
 
 module.exports.fetchAlbumsOfArtist = fetchAlbumsOfArtist;
+
+const fetchPlaylistsOfPublicUser = async (args) => {
+    limit = args.limit;
+    offset = args.offset;
+    userId = args.userId;
+    console.log(`fetch playlists for user ${userId}, limt:${limit}, offset:${offset}`);
+
+    const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=${limit}&offset=${offset}`, {
+        headers: await haveHeadersWithAuthToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    return (data.items || [])
+        .map(playlistRaw => spotifyJsonToPlaylist(playlistRaw));
+    
+}
+
+module.exports.fetchPlaylistsOfPublicUser = fetchPlaylistsOfPublicUser;
+
+const fetchPlaylistsOfUser = async (args) => {
+    limit = args.limit;
+    offset = args.offset;
+    console.log(`fetch my playlists, limt:${limit}, offset:${offset}`);
+
+    const response = await fetch(`https://api.spotify.com/v1/me/playlists?limit=${limit}&offset=${offset}`, {
+        headers: await haveHeadersWithMyToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    return (data.items || [])
+        .map(playlistRaw => spotifyJsonToPlaylist(playlistRaw));
+    
+}
+
+module.exports.fetchPlaylistsOfUser = fetchPlaylistsOfUser;
+
+const fetchSongsFromPlaylist = async (args) => {
+    limit = args.limit;
+    offset = args.offset;
+    playlistId = args.id;
+    console.log(`fetch songs, playlustId: ${playlistId}, limt:${limit}, offset:${offset}`);
+
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=${limit}&offset=${offset}`, {
+        headers: await haveHeadersWithAuthToken()
+    });
+    const data = await response.json();
+    throwExceptionOnError(data);
+
+    return (data.items || [])
+        .map(trackRaw => spotifyJsonToTrack(trackRaw.track));
+    
+}
+
+module.exports.fetchSongsFromPlaylist = fetchSongsFromPlaylist;
 
 const spotifyJsonToArtist = async (raw) => {
     return {
@@ -109,3 +260,19 @@ const spotifyJsonToAlbum = (albumRaw) => {
         tracks: [] // TODO implement fetching of tracks of album
     };
 };
+
+const spotifyJsonToPlaylist = (playlistRaw) => {
+    return {
+        ...playlistRaw,
+        image: playlistRaw.images[0] ? playlistRaw.images[0].url : '',
+        tracks: (args, object) => {
+            return fetchSongsFromPlaylist({id:playlistRaw.id, limit:5, offset:0});
+        }
+    };
+}
+
+const spotifyJsonToTrack = (trackRaw) => {
+    return {
+        ...trackRaw
+    }
+}
