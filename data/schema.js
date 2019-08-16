@@ -1,20 +1,20 @@
 const fs = require('fs');
 const path = require('path');
-const express = require('express');
-const graphqlHTTP = require('express-graphql');
 const { makeExecutableSchema } = require('graphql-tools');
 
 const schemaFile = path.join(__dirname, 'schema.graphql');
 const typeDefs = fs.readFileSync(schemaFile, 'utf8');
 
-const { fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPublicUser, fetchMe, fetchPublicUser, fetchMyTopTracks, fetchMyTopArtists } = require('./resolvers');
+const { haveToken,fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPublicUser, fetchMe, fetchPublicUser, fetchMyTopTracks, fetchMyTopArtists } = require('./resolvers');
+const getMe = require('../spotify/getMe');
+const getPublicUser = require('../spotify/getPublicUser');
 
 const music = require('musicmatch')({apikey:process.env.MUSICMATCH_API_KEY});
 
 const resolvers = {
   Query: {
-    me: (parent,args,ctx,info) => fetchMe(ctx),
-    user: (parent,args,ctx,info) => fetchPublicUser(args),
+    me: (parent,args,ctx,info) => getMe(ctx.query.access_token),
+    user: (parent,args,ctx,info) => haveToken().then(token => getPublicUser(token, args.id)),
     artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
     playlists: (parent,args,ctx,info) => fetchPlaylistsOfUser(args)
   },
