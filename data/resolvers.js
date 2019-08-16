@@ -48,19 +48,19 @@ const haveHeadersWithAuthToken = async () => {
     return await spotifyProxy()
 };
 
-const haveHeadersWithMyToken = async () => 
+const haveHeadersWithMyToken = async (token) => 
 {
     return {
         'Accept': 'application/json',
-        'Authorization': 'Bearer ' + process.env.SPOTIFY_USER_TOKEN
+        'Authorization': 'Bearer ' + token
     };
 }
 
-const fetchMe = async () => {
+const fetchMe = async (ctx) => {
     console.log(`fetch me`);
-
+    console.log(`${ctx.query.access_token}`);
     const response = await fetch(`https://api.spotify.com/v1/me`, {
-        headers: await haveHeadersWithMyToken()
+        headers: await haveHeadersWithMyToken(ctx.query.access_token)
     });
     const data = await response.json();
     throwExceptionOnError(data);
@@ -99,7 +99,7 @@ const fetchMyTopArtists = async (args) => {
     let request = `https://api.spotify.com/v1/me/top/artists?time_range=${time_range}&limit=${limit}&offset=${offset}`;
     console.log(request);
     const response = await fetch(request, {
-        headers: await haveHeadersWithMyToken()
+        headers: await haveHeadersWithMyToken(args.access_token)
     });
     const data = await response.json();
     throwExceptionOnError(data);
@@ -116,7 +116,7 @@ const fetchPublicUser = async(args) => {
     console.log(`fetch user ${args.id}`);
 
     const response = await fetch(`https://api.spotify.com/v1/users/${args.id}`, {
-        headers: await haveHeadersWithAuthToken()
+        headers: await haveHeadersWithAuthToken(args.access_token)
     });
     const data = await response.json();
     throwExceptionOnError(data);

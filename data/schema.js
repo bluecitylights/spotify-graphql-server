@@ -13,7 +13,7 @@ const music = require('musicmatch')({apikey:process.env.MUSICMATCH_API_KEY});
 
 const resolvers = {
   Query: {
-    me: (parent,args,ctx,info) => fetchMe(),
+    me: (parent,args,ctx,info) => fetchMe(ctx),
     user: (parent,args,ctx,info) => fetchPublicUser(args),
     artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
     playlists: (parent,args,ctx,info) => fetchPlaylistsOfUser(args)
@@ -28,10 +28,10 @@ const resolvers = {
       return fetchPlaylistsOfUser({limit: args.limit, offset: args.offset})
     },
     topTracks: (parent,args,ctx,info) => {
-      return fetchMyTopTracks({timeRange: args.timeRange, limit: args.limit, offset: args.offset})
+      return fetchMyTopTracks({timeRange: args.timeRange, limit: args.limit, offset: args.offset, access_token: ctx.query.access_token})
     },
     topArtists: (parent,args,ctx,info) => {
-      return fetchMyTopArtists({timeRange: args.timeRange, limit: args.limit, offset: args.offset})
+      return fetchMyTopArtists({timeRange: args.timeRange, limit: args.limit, offset: args.offset, access_token: ctx.query.access_token})
     }
   },
   Track: {

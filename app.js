@@ -18,7 +18,7 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(require('node-sass-middleware')({
   src: path.join(__dirname, 'public'),
@@ -32,11 +32,10 @@ app.use('/', routes);
 
 
 // API middleware
-
 app.use('/graphql', cors(), expressGraphQL(req => ({
     schema,
     graphiql: true,
-    pretty: process.env.NODE_ENV !== 'production',
+    pretty: process.env.NODE_ENV !== 'production'
 })));
 
 // catch 404 and forward to error handler
