@@ -14,7 +14,7 @@ const simpleMockServer = mockServer(schema, {
 });
 
 const result = simpleMockServer.query(`{
-    queryArtists(byName:"Marilyn Manson") {
+    artists(byName:"Marilyn Manson") {
         name
         albums {
             name
