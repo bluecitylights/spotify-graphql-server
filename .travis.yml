@@ -1,25 +1,46 @@
+# Use Dockerized infrastructure
+sudo: false
+
+# Use node_js environnement
 language: node_js
 node_js:
   - "stable"
 
-sudo: required
+# Cache Gcloud SDK between commands
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
 
+# Install services
 services:
   - docker
 
-before_install:
-  - docker build -t "$DOCKER_USERNAME"/spotify-graphql .
-  
+# Set env vars
+env:
+  global:
+    - GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-service-key.json
+    - NODE_ENV=CI
 
 install:
-  npm install && npm run test
+  - npm install
 
 script:
-  - docker images "$DOCKER_USERNAME"/spotify-graphql
+  - npm test
 
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push "$DOCKER_USERNAME"/spotify-graphql;
-    fi
-  
+env:
+  global:
+  # Do not prompt for user input when using any SDK methods.
+  - CLOUDSDK_CORE_DISABLE_PROMPTS=1 
+
+before_deploy:
+  # redirect to /dev/null, see https://github.com/m-lab/travis/pull/21
+  - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; curl https://sdk.cloud.google.com | bash > /dev/null; fi
+  - source /home/travis/google-cloud-sdk/path.bash.inc
+
+deploy:
+  - provider: script
+    script: bash ./deploy.sh
+    skip_cleanup: true
+    on:
+      branch: authentication
+
