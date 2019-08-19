@@ -14,12 +14,10 @@ const fetch = require('node-fetch');
 // load secrets from .env file and store in process.env
 require('dotenv').config();
 
-const {
-    CLIENT_ID = 'invalid',
-    CLIENT_SECRET = 'invalid'
-} = process.env;
+const credentials = require('../spotify/credentials');
 
-const authorizationHeader = () => 'Basic ' + (Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'));
+
+const authorizationHeader = () => 'Basic ' + (Buffer.from(credentials.client_id + ':' + credentials.client_secret).toString('base64'));
 
 const authOptions = {
     url: 'https://accounts.spotify.com/api/token',

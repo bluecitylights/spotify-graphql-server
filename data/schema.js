@@ -1,20 +1,20 @@
 const fs = require('fs');
 const path = require('path');
-const express = require('express');
-const graphqlHTTP = require('express-graphql');
 const { makeExecutableSchema } = require('graphql-tools');
 
 const schemaFile = path.join(__dirname, 'schema.graphql');
 const typeDefs = fs.readFileSync(schemaFile, 'utf8');
 
-const { fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPublicUser, fetchMe, fetchPublicUser, fetchMyTopTracks, fetchMyTopArtists } = require('./resolvers');
+const { haveToken,fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPublicUser, fetchMe, fetchPublicUser, fetchMyTopTracks, fetchMyTopArtists } = require('./resolvers');
+const getMe = require('../spotify/getMe');
+const getPublicUser = require('../spotify/getPublicUser');
 
 const music = require('musicmatch')({apikey:process.env.MUSICMATCH_API_KEY});
 
 const resolvers = {
   Query: {
-    me: (parent,args,ctx,info) => fetchMe(),
-    user: (parent,args,ctx,info) => fetchPublicUser(args),
+    me: (parent,args,ctx,info) => getMe(ctx.query.access_token),
+    user: (parent,args,ctx,info) => haveToken().then(token => getPublicUser(token, args.id)),
     artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
     playlists: (parent,args,ctx,info) => fetchPlaylistsOfUser(args)
   },
@@ -28,10 +28,10 @@ const resolvers = {
       return fetchPlaylistsOfUser({limit: args.limit, offset: args.offset})
     },
     topTracks: (parent,args,ctx,info) => {
-      return fetchMyTopTracks({timeRange: args.timeRange, limit: args.limit, offset: args.offset})
+      return fetchMyTopTracks({timeRange: args.timeRange, limit: args.limit, offset: args.offset, access_token: ctx.query.access_token})
     },
     topArtists: (parent,args,ctx,info) => {
-      return fetchMyTopArtists({timeRange: args.timeRange, limit: args.limit, offset: args.offset})
+      return fetchMyTopArtists({timeRange: args.timeRange, limit: args.limit, offset: args.offset, access_token: ctx.query.access_token})
     }
   },
   Track: {

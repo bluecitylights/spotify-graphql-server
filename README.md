@@ -1,10 +1,7 @@
 # spotify-graphql-server
-
-This demonstrates how to build a GraphQL server which fetches data from an external API (Spotify),
-see [german blog post](https://blog.codecentric.de/2017/09/graphql-mit-spotify-teil-1-server) or
- [english blog post](https://blog.codecentric.de/en/2017/01/lets-build-spotify-graphql-server)
-
-Use the [Live Demo](https://spotify-graphql-server.herokuapp.com/) as a playground for graphql queries.
+This application supports a graphQL API for spotify data and combines it with lyrics database. The orignal code is forked from the repo mentioned in this blog
+[english blog post](https://blog.codecentric.de/en/2017/01/lets-build-spotify-graphql-server)
+The code for user authentication is inspired by  https://pusher.com/tutorials/spotify-history-react-node
 
 ## Get started
 
@@ -31,5 +28,3 @@ Run `npm install`.
 ### print GraphQL schema idl
 
 `npm run printSchema`
-
-![Analytics](https://ga-beacon.appspot.com/UA-72383363-1/lowsky/spotify-graphql-server/README.md)

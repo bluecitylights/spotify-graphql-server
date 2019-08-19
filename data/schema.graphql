@@ -11,8 +11,8 @@ type User {
   id: ID
   image: String
   playlists(limit: Int = 5, offset: Int = 0): [Playlist]
-  topTracks(timeRange: TimeRange, limit: Int = 5, offset: Int = 0): [Track]
-  topArtists(timeRange: TimeRange, limit: Int = 5, offset: Int = 0): [Artist]
+  topTracks(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Track]
+  topArtists(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Artist]
 }
 type PublicUser {
   display_name: String
