@@ -1,5 +1,5 @@
 var express = require('express');
-var packageJson = require('../package.json');
+var packageJson = require('../../package.json');
 var router = express.Router();
 
 /* GET home page. */
