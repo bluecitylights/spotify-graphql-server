@@ -8,7 +8,7 @@ const cors = require('cors');
 const routes = require('./routes/index');
 
 const expressGraphQL = require('express-graphql');
-const schema = require('./data/schema');
+const schema = require('./schema');
 
 const app = express();
 

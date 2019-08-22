@@ -9,18 +9,20 @@
   },
   "scripts": {
     "test": "npm run simpletest",
-    "simpletest": "node ./test/schemaTest",
-    "printSchema": "node ./bin/printSchema",
-    "watch": "nodemon src/serverInit.js",
-    "start": "node src/serverInit.js"
+    "simpletest": "node -r esm ./test/schemaTest",
+    "printSchema": "node -r esm ./bin/printSchema",
+    "watch": "nodemon -r esm src/serverInit.js",
+    "start": "node -r esm src/serverInit.js"
   },
   "dependencies": {
     "body-parser": "1.19.0",
     "cookie-parser": "1.4.4",
     "cors": "2.8.5",
+    "dataloader": "^1.4.0",
     "debug": "4.1.1",
     "dotenv": "8.0.0",
     "ejs": "2.6.2",
+    "esm": "^3.2.25",
     "express": "4.17.1",
     "express-graphql": "0.8.0",
     "graphql": "14.4.2",
