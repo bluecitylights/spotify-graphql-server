@@ -1,5 +1,5 @@
-import 'isomorphic-fetch'
 import Dataloader from 'dataloader'
+const fetch = require('node-fetch');
 
 function makeHeaders(token) {
     return {
@@ -163,6 +163,16 @@ export async function getMe(token)
     return res;
 }
 
+export async function getPlaylists(token, { userId, limit = 100, offset = 0 })
+{
+    let res = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${serializeToURLParameters({limit, offset})}`, {
+        method: 'GET',
+        headers: makeHeaders(token)
+    });
+    res = await res.json();
+    return res;
+}
+
 export async function getPlaylistTracks(token, { userId, playlistId, limit = 100, offset = 0 })
 {
     let res = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks?${serializeToURLParameters({limit, offset})}`, {
@@ -236,6 +246,15 @@ export function makePlaylistLoader(token) {
     const batchLoadFn = async ([key]) => {
         const { userId, playlistId } = key
         const playlist = await getPlaylist(token, userId, playlistId)
+        return [playlist]
+    }
+    return new Dataloader(batchLoadFn, { batch: false })
+}
+
+export function makePlaylistsLoader(token) {
+    const batchLoadFn = async ([key]) => {
+        const { userId } = key
+        const playlist = await getPlaylists(token, userId)
         return [playlist]
     }
     return new Dataloader(batchLoadFn, { batch: false })
@@ -349,6 +368,7 @@ export function makeLoaders(token) {
     return {
         UserLoader : makeUserLoader(token),
         PlaylistLoader : makePlaylistLoader(token),
+        PlaylistsLoader : makePlaylistsLoader(token),
         PlaylistTracksLoader: makePlaylistTracksLoader(token),
         AlbumsLoader: makeAlbumsLoader(token),
         ArtistsLoader: makeArtistsLoader(token),

@@ -1,17 +1,9 @@
-const fetch = require('node-fetch');
+const {makeLoaders} = require('./SpotifyWebApi');
 
-const getPublicUser = (token, id) => {
-    console.log(`getPublicUSer ${token}`)
-    url = `https://api.spotify.com/v1/users/${id}`;
-    return fetch(url, {
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + token
-        }
-    })
-    .then(res => res.json())
-    .then(data => data)
-    .catch(error => console.log(error));
+const getPublicUser = async (token, id) => {
+    console.log('getPublicUser start');
+    const {UserLoader} = makeLoaders(token);
+    return  await UserLoader.load(id);
 }
 
 module.exports = getPublicUser

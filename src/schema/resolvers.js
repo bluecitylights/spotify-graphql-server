@@ -179,10 +179,7 @@ const fetchAlbumsOfArtist = async (artistId, limit) => {
 
 module.exports.fetchAlbumsOfArtist = fetchAlbumsOfArtist;
 
-const fetchPlaylistsOfPublicUser = async (args) => {
-    limit = args.limit;
-    offset = args.offset;
-    userId = args.userId;
+const fetchPlaylistsOfPublicUser = async ({userId, limit, offset}) => {
     console.log(`fetch playlists for user ${userId}, limt:${limit}, offset:${offset}`);
 
     const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=${limit}&offset=${offset}`, {
@@ -197,6 +194,28 @@ const fetchPlaylistsOfPublicUser = async (args) => {
 }
 
 module.exports.fetchPlaylistsOfPublicUser = fetchPlaylistsOfPublicUser;
+
+const fetchPlaylist = async (playlist_id) => {
+    console.log(`mape ${playlist_id}`);
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
+        headers: await haveHeadersWithAuthToken()
+    });
+    const playlist = await response.json();
+    throwExceptionOnError(playlist);
+    return playlist;
+};
+
+const fetchPlaylists = async (playlistids) => {
+    console.log(`fetch playlists collection, ${playlistids}`);
+
+    let playlists = await Promise.all(
+        playlistids.map(fetchPlaylist)
+    );
+
+    return playlists.map(playlistRaw => spotifyJsonToPlaylist(playlistRaw));
+}
+
+module.exports.fetchPlaylists = fetchPlaylists;
 
 const fetchPlaylistsOfUser = async (args) => {
     limit = args.limit;
@@ -269,6 +288,7 @@ const spotifyJsonToAlbum = (albumRaw) => {
 };
 
 const spotifyJsonToPlaylist = (playlistRaw) => {
+    console.log(`playlistRaw ${playlistRaw}`)
     return {
         ...playlistRaw,
         image: playlistRaw.images[0] ? playlistRaw.images[0].url : '',

@@ -1,11 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const { makeExecutableSchema } = require('graphql-tools');
+const pointlogic = require('../spotify/pointlogic.json');
 
 const schemaFile = path.join(__dirname, 'schema.graphql');
 const typeDefs = fs.readFileSync(schemaFile, 'utf8');
 
-const { haveToken,fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPublicUser, fetchMe, fetchPublicUser, fetchMyTopTracks, fetchMyTopArtists } = require('./resolvers');
+const { haveToken,fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPublicUser, fetchMe, fetchPublicUser, fetchMyTopTracks, fetchMyTopArtists, fetchPlaylists } = require('./resolvers');
 const getMe = require('../spotify/getMe');
 const getPublicUser = require('../spotify/getPublicUser');
 
@@ -16,7 +17,16 @@ const resolvers = {
       me: (parent,args,ctx,info) => getMe(ctx.query.access_token),
       user: (parent,args,ctx,info) => haveToken().then(token => getPublicUser(token, args.id)),
       artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
-      playlists: (parent,args,ctx,info) => fetchPlaylistsOfUser(args)
+      pointlogic: (parent,args,ctx,info) => {
+        playlists = fetchPlaylists(pointlogic.playlists);
+        
+        return {
+          "display_name" : "Pointlogic",
+          "id" :  "Pointlogic",
+          "image" : "",
+          "playlists": playlists
+        };
+      }
     },
     PublicUser: {
       playlists: (parent,args,ctx,info) => {

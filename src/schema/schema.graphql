@@ -4,7 +4,7 @@ type Query {
   me: User
   user(id: ID): PublicUser
   artists(byName: String = "Red Hot Chili Peppers"): [Artist]
-  playlists(userId: ID, limit: Int = 20, offset: Int = 1): [Playlist]
+  pointlogic: Pointlogic
 }
 type User {
   display_name: String
@@ -15,6 +15,12 @@ type User {
   topArtists(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Artist]
 }
 type PublicUser {
+  display_name: String
+  id: ID
+  image: String
+  playlists(limit: Int = 5, offset: Int = 0): [Playlist]
+}
+type Pointlogic {
   display_name: String
   id: ID
   image: String
