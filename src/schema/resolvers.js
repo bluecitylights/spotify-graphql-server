@@ -1,4 +1,5 @@
 const fetch = require ('node-fetch');
+const R = require('rambda');
 
 function errorMsg (error) {
     if (error) {
@@ -200,19 +201,24 @@ const fetchPlaylist = async (playlist_id) => {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
         headers: await haveHeadersWithAuthToken()
     });
-    const playlist = await response.json();
-    throwExceptionOnError(playlist);
-    return playlist;
+    const data = await response.json();
+    return data;
 };
+
+const getValidPlaylists = (playlists) => R.filter(validResponse, playlists);
+const getExtendedPlaylists = (playlists) => R.map(spotifyJsonToPlaylist, playlists);
+const validResponse = (response) => R.isNil(R.prop("error", response));
+
+const getAllPlaylist = (playlistIds) => Promise.all(
+    playlistIds.map(fetchPlaylist)
+);
 
 const fetchPlaylists = async (playlistids) => {
     console.log(`fetch playlists collection, ${playlistids}`);
 
-    let playlists = await Promise.all(
-        playlistids.map(fetchPlaylist)
-    );
-
-    return playlists.map(playlistRaw => spotifyJsonToPlaylist(playlistRaw));
+    let playlists = await getAllPlaylist(playlistids);
+    
+    return R.compose(getExtendedPlaylists, getValidPlaylists)(playlists);
 }
 
 module.exports.fetchPlaylists = fetchPlaylists;
@@ -288,7 +294,6 @@ const spotifyJsonToAlbum = (albumRaw) => {
 };
 
 const spotifyJsonToPlaylist = (playlistRaw) => {
-    console.log(`playlistRaw ${playlistRaw}`)
     return {
         ...playlistRaw,
         image: playlistRaw.images[0] ? playlistRaw.images[0].url : '',

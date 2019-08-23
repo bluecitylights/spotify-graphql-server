@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const { makeExecutableSchema } = require('graphql-tools');
-const pointlogic = require('../spotify/pointlogic.json');
 
 const schemaFile = path.join(__dirname, 'schema.graphql');
 const typeDefs = fs.readFileSync(schemaFile, 'utf8');
@@ -17,16 +16,7 @@ const resolvers = {
       me: (parent,args,ctx,info) => getMe(ctx.query.access_token),
       user: (parent,args,ctx,info) => haveToken().then(token => getPublicUser(token, args.id)),
       artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
-      pointlogic: (parent,args,ctx,info) => {
-        playlists = fetchPlaylists(pointlogic.playlists);
-        
-        return {
-          "display_name" : "Pointlogic",
-          "id" :  "Pointlogic",
-          "image" : "",
-          "playlists": playlists
-        };
-      }
+      playlists: (parent,args,ctx,info) => fetchPlaylists(args.ids)
     },
     PublicUser: {
       playlists: (parent,args,ctx,info) => {

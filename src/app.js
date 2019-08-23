@@ -7,7 +7,7 @@ const cors = require('cors');
 
 const routes = require('./routes/index');
 
-const { ApolloServer, gql } = require('apollo-server-express');
+const { ApolloServer } = require('apollo-server-express');
 import schema from './schema/index';
 
 const app = express();
