@@ -7,10 +7,12 @@ const cors = require('cors');
 
 const routes = require('./routes/index');
 
-const expressGraphQL = require('express-graphql');
-const schema = require('./schema');
+const { ApolloServer, gql } = require('apollo-server-express');
+import schema from './schema/index';
 
 const app = express();
+const server = new ApolloServer({schema});
+server.applyMiddleware({app, path: '/graphql'});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,14 +31,6 @@ app.use(require('node-sass-middleware')({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-
-
-// API middleware
-app.use('/graphql', cors(), expressGraphQL(req => ({
-    schema,
-    graphiql: true,
-    pretty: process.env.NODE_ENV !== 'production'
-})));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
