@@ -16,7 +16,7 @@ const resolvers = {
       me: (parent,args,ctx,info) => getMe(ctx.query.access_token),
       user: (parent,args,ctx,info) => haveToken().then(token => getPublicUser(token, args.id)),
       artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
-      playlists: (parent,args,ctx,info) => fetchPlaylists(args.ids)
+      playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids)
     },
     PublicUser: {
       playlists: (parent,args,ctx,info) => {
@@ -57,6 +57,6 @@ const resolvers = {
       }
   };
 
-export {typeDefs, resolvers};
-
-export default makeExecutableSchema({ typeDefs, resolvers });
+module.exports.typeDefs = typeDefs;
+module.exports.resolvers = resolvers;
+//export default makeExecutableSchema({ typeDefs, resolvers});

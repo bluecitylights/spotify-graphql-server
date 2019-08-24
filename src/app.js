@@ -4,14 +4,28 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const SpotifyAPI = require('./spotify');
 const routes = require('./routes/index');
-
+const {typeDefs, resolvers} = require('./schema');
 const { ApolloServer } = require('apollo-server-express');
-import schema from './schema/index';
+//import schema from './schema/index';
 
 const app = express();
-const server = new ApolloServer({schema});
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  dataSources: () => {
+    return {
+      spotifyAPI: new SpotifyAPI()
+    };
+  },
+  context: () => {
+    return {
+      token: 'BQBEtPx11Q--k0tqv1fl6UP3DuVMA3QyalnR0LVbOrr2_m39ZdYBMLrnudevOUYBz8XKGcHex0N-ckgbnT1wO8dbOskmEXFZwqRh5CnOATpLneua7WOVGmZPCPlTVhDLuXwp6jHkoOKdIioMrOjAId6TjnOZQ0Hpprme7BVoWT3SxsF2OdX7jRpkd43d_w1uADyXLSpxN5ygzg',
+    };
+  },
+});
+//console.log(`${JSON.stringify(schema)}`);
 server.applyMiddleware({app, path: '/graphql'});
 
 // view engine setup

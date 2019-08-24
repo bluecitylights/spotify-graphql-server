@@ -196,33 +196,6 @@ const fetchPlaylistsOfPublicUser = async ({userId, limit, offset}) => {
 
 module.exports.fetchPlaylistsOfPublicUser = fetchPlaylistsOfPublicUser;
 
-const fetchPlaylist = async (playlist_id) => {
-    console.log(`mape ${playlist_id}`);
-    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
-        headers: await haveHeadersWithAuthToken()
-    });
-    const data = await response.json();
-    return data;
-};
-
-const getValidPlaylists = (playlists) => R.filter(validResponse, playlists);
-const getExtendedPlaylists = (playlists) => R.map(spotifyJsonToPlaylist, playlists);
-const validResponse = (response) => R.isNil(R.prop("error", response));
-
-const getAllPlaylist = (playlistIds) => Promise.all(
-    playlistIds.map(fetchPlaylist)
-);
-
-const fetchPlaylists = async (playlistids) => {
-    console.log(`fetch playlists collection, ${playlistids}`);
-
-    let playlists = await getAllPlaylist(playlistids);
-    
-    return R.compose(getExtendedPlaylists, getValidPlaylists)(playlists);
-}
-
-module.exports.fetchPlaylists = fetchPlaylists;
-
 const fetchPlaylistsOfUser = async (args) => {
     limit = args.limit;
     offset = args.offset;
