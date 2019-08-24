@@ -8,9 +8,9 @@ router.get('/', function(req, res) {
 });
 
 
-const authorizeSpotify = require('../spotify/authorize');
-const getAccessToken = require('../spotify/getAccessToken');
-const getRecentlyPlayed = require('../spotify/getRecentlyPlayed')
+const authorizeSpotify = require('../datasources/spotify/authorize');
+const getAccessToken = require('../datasources/spotify/getAccessToken');
+const getRecentlyPlayed = require('../datasources/spotify/getRecentlyPlayed')
 
 router.get('/login', authorizeSpotify);
 router.get('/callback', getAccessToken, (req, res, next) => {

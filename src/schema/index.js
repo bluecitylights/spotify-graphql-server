@@ -1,13 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const { makeExecutableSchema } = require('graphql-tools');
 
 const schemaFile = path.join(__dirname, 'schema.graphql');
 const typeDefs = fs.readFileSync(schemaFile, 'utf8');
 
 const { haveToken,fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPublicUser, fetchMe, fetchPublicUser, fetchMyTopTracks, fetchMyTopArtists, fetchPlaylists } = require('./resolvers');
-const getMe = require('../spotify/getMe');
-const getPublicUser = require('../spotify/getPublicUser');
+const getMe = require('../datasources/spotify/getMe');
+const getPublicUser = require('../datasources/spotify/getPublicUser');
 
 const music = require('musicmatch')({apikey:process.env.MUSICMATCH_API_KEY});
 

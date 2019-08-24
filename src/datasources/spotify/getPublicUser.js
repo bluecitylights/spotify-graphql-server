@@ -1,4 +1,4 @@
-const {makeLoaders} = require('./SpotifyWebApi');
+const {makeLoaders} = require('./SpotifyWebFunctions');
 
 const getPublicUser = async (token, id) => {
     console.log('getPublicUser start');
