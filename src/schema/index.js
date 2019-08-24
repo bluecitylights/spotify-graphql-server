@@ -8,18 +8,23 @@ const { haveToken,fetchArtistsByName, fetchPlaylistsOfUser, fetchPlaylistsOfPubl
 const getMe = require('../datasources/spotify/getMe');
 const getPublicUser = require('../datasources/spotify/getPublicUser');
 
-const music = require('musicmatch')({apikey:process.env.MUSICMATCH_API_KEY});
-
 const resolvers = {
     Query: {
-      me: (parent,args,ctx,info) => getMe(ctx.query.access_token),
-      user: (parent,args,ctx,info) => haveToken().then(token => getPublicUser(token, args.id)),
+      me: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getMe(),
+      user: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getUserById(args.id),
       artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
       playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids)
     },
     PublicUser: {
-      playlists: (parent,args,ctx,info) => {
-        return fetchPlaylistsOfPublicUser({userId: parent.id, limit: args.limit, offset: args.offset})
+      playlists: async ({id},args,ctx) => {
+        console.log(`id ${id}`);
+        return ctx.dataSources.spotifyAPI.getPlaylistsByUserId(id);
+      }
+    },
+    Playlist: {
+      image: ({images}) => images[0] ? images[0].url : '',
+      tracks: async (parent, args, ctx) => {
+        return ctx.dataSources.spotifyAPI.getPlaylistTracks(parent.id);
       }
     },
     User: {
@@ -34,26 +39,10 @@ const resolvers = {
       }
     },
     Track: {
-      lyrics: (parent,args,ctc,info) => {
-        return music.track({track_isrc: parent.external_ids["isrc"]})
-            .then(data => {
-              //console.log(JSON.stringify(`data: ${JSON.stringify(data)}`));
-              if (data.message.body.track.has_lyrics) {
-                return music.trackLyrics({track_id: data.message.body.track.track_id})
-                  .then(data => {
-                    _lyrics = JSON.stringify(data.message.body.lyrics.lyrics_body);
-                    //console.log(`lyrics: ${_lyrics}`);
-                    return Promise.resolve(_lyrics)
-                  })
-              }
-              else {
-                return Promise.resolve("no lyrics found");
-              }
-            })
-            .catch(err => err);
-          }
-  
+      lyrics: async (parent, args, ctx) => {
+        return ctx.dataSources.musixMatchAPI.getLyricsByIsrc(parent.external_ids["isrc"]);
       }
+    }
   };
 
 module.exports.typeDefs = typeDefs;

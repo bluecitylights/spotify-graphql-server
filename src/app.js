@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const SpotifyAPI = require('./datasources/spotify/SpotifyAPI');
+const MusixMatchAPI = require('./datasources/musixmatch/MusixMatchAPI');
 const routes = require('./routes/index');
 const {typeDefs, resolvers} = require('./schema');
 const {haveToken} = require('./schema/resolvers')
@@ -13,15 +14,17 @@ const { ApolloServer } = require('apollo-server-express');
 
 const app = express();
 
-const getContext = async () => haveToken().then(token => {
+const getContext = async ({request}) => haveToken().then(token => {
   return {
-    token: token
+    spotify_app_token: token,
+    spotify_user_token: request.headers.authorization || ''
   };
 });
 
 const getDataSources = () => {
   return {
-    spotifyAPI: new SpotifyAPI()
+    spotifyAPI: new SpotifyAPI(),
+    musixMatchAPI: new MusixMatchAPI()
   };
 };
 
@@ -29,7 +32,12 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   dataSources: getDataSources,
-  context: getContext,
+  context: ({req}) => haveToken().then(token => {
+    return {
+      spotify_app_token: `Bearer ${token}`,
+      spotify_user_token: req.headers.authorization || ''
+    };
+  })
 });
 //console.log(`${JSON.stringify(schema)}`);
 server.applyMiddleware({app, path: '/graphql'});
