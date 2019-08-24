@@ -14,7 +14,6 @@ class SpotifyAPI extends RESTDataSource {
       }
 
     getPlaylistById = async (playlistId) => {
-        console.log('pre');
         return this.get(`playlists/${playlistId}`);
     }
 
