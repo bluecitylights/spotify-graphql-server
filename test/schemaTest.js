@@ -1,6 +1,6 @@
 const mockServer = require('graphql-tools').mockServer;
-//addMockFunctionsToSchema
-const {typeDefs, resolvers} = require('../src/schema');
+const {resolvers} = require('../src/schema/resolvers');
+const {typeDefs} = require('../src/schema/typeDefs');
 const { makeExecutableSchema } = require('graphql-tools');
 
 let cnt = 0;
