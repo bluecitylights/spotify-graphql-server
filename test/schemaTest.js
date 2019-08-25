@@ -1,8 +1,11 @@
 const mockServer = require('graphql-tools').mockServer;
 //addMockFunctionsToSchema
-const schema = require('../data/schema');
+const {typeDefs, resolvers} = require('../src/schema');
+const { makeExecutableSchema } = require('graphql-tools');
 
 let cnt = 0;
+
+const schema = makeExecutableSchema({ typeDefs, resolvers});
 
 const simpleMockServer = mockServer(schema, {
     String: () => 'loremipsum ' + (cnt++),
