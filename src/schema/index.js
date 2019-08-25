@@ -12,7 +12,7 @@ const resolvers = {
     Query: {
       me: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getMe(),
       user: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getUserById(args.id),
-      artists: (parent,args,ctx,info) => fetchArtistsByName(args.byName),
+      artists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.searchArtist(args.byName),
       playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids)
     },
     PublicUser: {
@@ -42,6 +42,14 @@ const resolvers = {
       lyrics: async (parent, args, ctx) => {
         return ctx.dataSources.musixMatchAPI.getLyricsByIsrc(parent.external_ids["isrc"]);
       }
+    },
+    Artist: {
+      image: ({images}) => images[0] ? images[0].url : '',
+      albums: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumsForArtist(parent.id)
+    },
+    Album: {
+      image: ({images}) => images[0] ? images[0].url : '',
+      tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumTracks(parent.id)
     }
   };
 

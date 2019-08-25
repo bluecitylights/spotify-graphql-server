@@ -7,14 +7,12 @@ class SpotifyAPI extends RESTDataSource {
         this.baseURL = 'https://api.spotify.com/v1/';
     }
 
-    getToken = (request, spotify) => R.ifElse(
-        R.prop('path', request).startsWith('me'), 
-        R.prop('user_token', spotify),
-        R.prop('app_token', spotify)
-    );
+    getToken = (request, spotify) => 
+        R.prop('path', request).startsWith('me') ? R.prop('user_token', spotify) : R.prop('app_token', spotify)
+    
 
     willSendRequest(request) {
-        token = getToken(request, this.context.spotify);
+        token = this.getToken(request, this.context.spotify);
         request.headers.set('Authorization', `${token}`);
         request.headers.set('Content-Type', `application/json`);
         request.headers.set('Accept', `application/json`);
@@ -38,7 +36,7 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     getPlaylistsByUserId = async (userId) => {
-        const data = await this.get(`users/${userId}/playlists`);//, {limit, offset});
+        const data = await this.get(`users/${userId}/playlists`);
         return data.items || [];
     }
 
@@ -47,6 +45,31 @@ class SpotifyAPI extends RESTDataSource {
         // todo: let playlist return PlayliastTracks, so we can display added_at, added_by etc when navigating playlists.
         return R.pluck('track', data.items || []);
     }
+
+    getAlbumsForArtist = async (artistId) => {
+        const data = await this.get(`artists/${artistId}/albums`);
+        return (data.items || []);
+    }
+
+    getAlbumTracks = async (albumId) => {
+        const data = await this.get(`albums/${albumId}/tracks`);
+        return (data.items || []);
+    }
+
+    search = async (type, searchQuery) => {
+        return this.get(`search`, {
+             q: searchQuery,
+             type: type
+        });
+        return;
+    }
+
+    searchArtist = async (searchQuery) => {
+        const data = await this.search('artist', searchQuery);
+        return (data.artists.items || []);
+    }
+
+
 }
 
 module.exports = SpotifyAPI
