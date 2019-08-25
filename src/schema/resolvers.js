@@ -30,6 +30,9 @@ const resolvers = {
       },
       recent: (parent,args,ctx,info) => {
         return ctx.dataSources.spotifyAPI.getRecentlyPlayed();
+      },
+      current: (parent,args,ctx,info) => {
+        return ctx.dataSources.spotifyAPI.getCurrentSong();
       }
     },
     Track: {

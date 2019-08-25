@@ -47,6 +47,11 @@ class SpotifyAPI extends RESTDataSource {
         const data = await this.get(`me/player/recently-played`);
         return R.pluck('track', data.items || []);
     }
+    
+    getCurrentSong = async () => {
+        const data = await this.get(`me/player/currently-playing`);
+        return R.prop('item', data);
+    }
 
     getUserById = async (id) => {
         return this.get(`users/${id}`);
