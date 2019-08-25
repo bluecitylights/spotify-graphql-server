@@ -28,6 +28,11 @@ const resolvers = {
       topArtists: (parent,args,ctx,info) => {
         return ctx.dataSources.spotifyAPI.getUserTopArtists({timeRange: args.timeRange})
       },
+      player: (parent,args,ctx,info) => {
+        return {};
+      }
+    },
+    Player: {
       recent: (parent,args,ctx,info) => {
         return ctx.dataSources.spotifyAPI.getRecentlyPlayed();
       },
