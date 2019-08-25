@@ -14,7 +14,7 @@ const fetch = require('node-fetch');
 // load secrets from .env file and store in process.env
 require('dotenv').config();
 
-const credentials = require('../datasources/spotify/credentials');
+const credentials = require('./credentials');
 
 
 const authorizationHeader = () => 'Basic ' + (Buffer.from(credentials.client_id + ':' + credentials.client_secret).toString('base64'));
