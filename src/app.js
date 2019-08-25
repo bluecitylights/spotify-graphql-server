@@ -14,13 +14,6 @@ const { ApolloServer } = require('apollo-server-express');
 
 const app = express();
 
-const getContext = async ({request}) => haveToken().then(token => {
-  return {
-    spotify_app_token: token,
-    spotify_user_token: request.headers.authorization || ''
-  };
-});
-
 const getDataSources = () => {
   return {
     spotifyAPI: new SpotifyAPI(),
@@ -28,14 +21,18 @@ const getDataSources = () => {
   };
 };
 
+haveToken().then(console.log);
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   dataSources: getDataSources,
   context: ({req}) => haveToken().then(token => {
     return {
-      spotify_app_token: `Bearer ${token}`,
-      spotify_user_token: req.headers.authorization || ''
+      spotify: {
+        app_token: `Bearer ${token}`,
+        user_token: req.headers.authorization || ''
+      }
     };
   })
 });

@@ -7,8 +7,14 @@ class SpotifyAPI extends RESTDataSource {
         this.baseURL = 'https://api.spotify.com/v1/';
     }
 
+    getToken = (request, spotify) => R.ifElse(
+        R.prop('path', request).startsWith('me'), 
+        R.prop('user_token', spotify),
+        R.prop('app_token', spotify)
+    );
+
     willSendRequest(request) {
-        token = this.context.spotify_user_token ? this.context.spotify_user_token : this.context.spotify_app_token;
+        token = getToken(request, this.context.spotify);
         request.headers.set('Authorization', `${token}`);
         request.headers.set('Content-Type', `application/json`);
         request.headers.set('Accept', `application/json`);

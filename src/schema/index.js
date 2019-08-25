@@ -47,4 +47,4 @@ const resolvers = {
 
 module.exports.typeDefs = typeDefs;
 module.exports.resolvers = resolvers;
-//export default makeExecutableSchema({ typeDefs, resolvers});
+

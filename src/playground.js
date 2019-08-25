@@ -1,5 +1,19 @@
 console.log('playground');
-// const R = require('rambda')
+const R = require('rambda')
+
+
+token = context => R.propOr(R.prop('spotify_app_token', context),'spotify_user_token', context);
+
+ctx = {
+  spotify: {
+    user_token: "user",
+    app_token: "app"
+  }
+}
+
+console.log(R.prop('user_token', ctx.spotify));
+console.log(R.prop('app_token', ctx.spotify));
+console.log(R.propOr('dont know', 'spotify_user_token', ctx.spotify));
 
 
 // const spotifyJsonToPlaylist = (playlist) => R.identity(playlist);
@@ -83,11 +97,11 @@ console.log('playground');
 // getMemberName().then(console.log);
 
 
-let spotify = new SpotifyAPI();
-haveToken().then(
-  token => spotify.context = {token: token}
-).then(
-  _ => spotify.getPlaylistById("0cxweUp9hijeHkzhrdRsUT")
-).then(
-  console.log, console.error
-);
+// let spotify = new SpotifyAPI();
+// haveToken().then(
+//   token => spotify.context = {token: token}
+// ).then(
+//   _ => spotify.getPlaylistById("0cxweUp9hijeHkzhrdRsUT")
+// ).then(
+//   console.log, console.error
+// );
