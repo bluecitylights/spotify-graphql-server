@@ -29,13 +29,13 @@ const resolvers = {
     },
     User: {
       playlists: (parent,args,ctx,info) => {
-        return fetchPlaylistsOfUser({limit: args.limit, offset: args.offset})
+        return ctx.dataSources.spotifyAPI.getPlaylistsOfUser();
       },
       topTracks: (parent,args,ctx,info) => {
-        return fetchMyTopTracks({timeRange: args.timeRange, limit: args.limit, offset: args.offset, access_token: ctx.query.access_token})
+        return ctx.dataSources.spotifyAPI.getUserTopTracks({timeRange: args.timeRange})
       },
       topArtists: (parent,args,ctx,info) => {
-        return fetchMyTopArtists({timeRange: args.timeRange, limit: args.limit, offset: args.offset, access_token: ctx.query.access_token})
+        return ctx.dataSources.spotifyAPI.getUserTopArtists({timeRange: args.timeRange})
       }
     },
     Track: {

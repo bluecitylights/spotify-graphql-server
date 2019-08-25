@@ -22,6 +22,27 @@ class SpotifyAPI extends RESTDataSource {
         return this.get(`me`);
     }
 
+    getPlaylistsOfUser = async () => {
+        const data = await this.get(`me/playlists`);
+        return (data.items || []);
+    }
+
+    getUserTop = async (timeRange, type) => {
+        return this.get(`me/top/${type}`, {
+            time_range: 'short_term' // todo
+        });
+    }
+
+    getUserTopTracks = async (timeRange) => {
+        const data = await this.getUserTop(timeRange, 'tracks');
+        return data.items || [];
+    }
+
+    getUserTopArtists = async (timeRange) => {
+        const data = await this.getUserTop(timeRange, 'artists');
+        return data.items || [];
+    }
+
     getUserById = async (id) => {
         return this.get(`users/${id}`);
     }
