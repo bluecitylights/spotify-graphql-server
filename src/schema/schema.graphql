@@ -13,6 +13,7 @@ type User {
   playlists(limit: Int = 5, offset: Int = 0): [Playlist]
   topTracks(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Track]
   topArtists(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Artist]
+  recent: [Track]
 }
 type PublicUser {
   display_name: String

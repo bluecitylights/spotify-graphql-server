@@ -36,6 +36,9 @@ const resolvers = {
       },
       topArtists: (parent,args,ctx,info) => {
         return ctx.dataSources.spotifyAPI.getUserTopArtists({timeRange: args.timeRange})
+      },
+      recent: (parent,args,ctx,info) => {
+        return ctx.dataSources.spotifyAPI.getRecentlyPlayed();
       }
     },
     Track: {
