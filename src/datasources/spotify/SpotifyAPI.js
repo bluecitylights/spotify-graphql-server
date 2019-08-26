@@ -58,7 +58,8 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     pause = async () => {
-        return this.put(`me/player/pause`);
+        await this.put(`me/player/pause`);
+        return True;
         
     }
 
@@ -69,11 +70,15 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     next = async () => {
-        return this.post(`me/player/next`).then(this.getCurrentSong);
+        await this.post(`me/player/next`);
+        const data = await this.getCurrentSong();
+        return data;
     }
 
     previous = async () => {
-        return this.post(`me/player/previous`).then(this.getCurrentSong);
+        await this.post(`me/player/previous`);
+        const data = await this.getCurrentSong();
+        return data;
     }
 
     getUserById = async (id) => {

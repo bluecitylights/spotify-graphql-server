@@ -6,7 +6,8 @@ const isUserAuthenticated = (parent,args,ctx,info) => {
   }
 }
 
-const getMe = (parent, args, ctx) => combineResolvers(isUserAuthenticated, getMe);
+const getImage = ({images}) => images[0] ? images[0].url : '';
+const getMe = (parent, args, ctx) => ctx.dataSources.spotifyAPI.getMe();
 const play = (parent, args, ctx) => ctx.dataSources.spotifyAPI.play();
 const pause = (parent, args, ctx) => ctx.dataSources.spotifyAPI.pause();
 const next = (parent, args, ctx) => ctx.dataSources.spotifyAPI.next();
@@ -14,7 +15,7 @@ const previous = (parent, args, ctx) => ctx.dataSources.spotifyAPI.previous();
 
 const resolvers = {
     Query: {
-      me: getMe,
+      me: (parent, args, ctx) => combineResolvers(isUserAuthenticated, getMe),
       user: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getUserById(args.id),
       artists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.searchArtist(args.byName),
       playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids)
@@ -28,29 +29,16 @@ const resolvers = {
     },
 
     PublicUser: {
-      playlists: async ({id},args,ctx) => {
-        console.log(`id ${id}`);
-        return ctx.dataSources.spotifyAPI.getPlaylistsByUserId(id);
-      }
+      playlists: async ({id},args,ctx) => ctx.dataSources.spotifyAPI.getPlaylistsByUserId(id)
     },
     Playlist: {
-      image: ({images}) => images[0] ? images[0].url : '',
-      tracks: async (parent, args, ctx) => {
-        return ctx.dataSources.spotifyAPI.getPlaylistTracks(parent.id);
-      }
+      image: ({images}) => getImage(images),
+      tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getPlaylistTracks(parent.id)
     },
     User: {
-      playlists: (parent,args,ctx,info) => {
-        return ctx.dataSources.spotifyAPI.getPlaylistsOfUser();
-      },
+      playlists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsOfUser(),
       stats: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getStatistics(),
-      player: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlayer(),
-      topArtists: (parent,args,ctx,info) => {
-        return ctx.dataSources.spotifyAPI.getUserTopArtists({timeRange: args.timeRange})
-      },
-      topTracks: (parent,args,ctx,info) => {
-        return ctx.dataSources.spotifyAPI.getUserTopTracks({timeRange: args.timeRange})
-      }
+      player: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlayer()
     },
     Statistics: {
       topArtists: (parent,args,ctx,info) => {
@@ -74,11 +62,11 @@ const resolvers = {
       }
     },
     Artist: {
-      image: ({images}) => images[0] ? images[0].url : '',
+      image: ({images}) => getImage(images),
       albums: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumsForArtist(parent.id)
     },
     Album: {
-      image: ({images}) => images[0] ? images[0].url : '',
+      image: ({images}) => getImage(images),
       tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumTracks(parent.id)
     }
   };
