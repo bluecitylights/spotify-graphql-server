@@ -6,14 +6,28 @@ type Query {
   artists(byName: String = "Red Hot Chili Peppers"): [Artist]
   playlists(ids: [String]): [Playlist]
 }
+
+type Mutation {
+  play: Track,
+  pause: Boolean,
+  next: Track,
+  previous: Track 
+}
+
 type User {
   display_name: String
   id: ID
   image: String
   playlists(limit: Int = 5, offset: Int = 0): [Playlist]
+  stats: Statistics
   topTracks(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Track]
   topArtists(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Artist]
   player: Player
+}
+type Statistics {
+  id: ID
+  topTracks(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Track]
+  topArtists(timeRange: TimeRange = short_term, limit: Int = 5, offset: Int = 0): [Artist]
 }
 type Player {
   recent: [Track]
