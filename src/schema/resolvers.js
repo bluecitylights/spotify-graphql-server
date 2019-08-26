@@ -6,7 +6,6 @@ const isUserAuthenticated = (parent,args,ctx,info) => {
   }
 }
 
-const getImage = ({images}) => images[0] ? images[0].url : '';
 const getMe = (parent, args, ctx) => ctx.dataSources.spotifyAPI.getMe();
 const play = (parent, args, ctx) => ctx.dataSources.spotifyAPI.play();
 const pause = (parent, args, ctx) => ctx.dataSources.spotifyAPI.pause();
@@ -32,7 +31,7 @@ const resolvers = {
       playlists: async ({id},args,ctx) => ctx.dataSources.spotifyAPI.getPlaylistsByUserId(id)
     },
     Playlist: {
-      image: ({images}) => getImage(images),
+      image: ({images}) => images[0] ? images[0].url : '',
       tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getPlaylistTracks(parent.id)
     },
     User: {
@@ -62,11 +61,11 @@ const resolvers = {
       }
     },
     Artist: {
-      image: ({images}) => getImage(images),
+      image: ({images}) => images[0] ? images[0].url : '',
       albums: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumsForArtist(parent.id)
     },
     Album: {
-      image: ({images}) => getImage(images),
+      image: ({images}) => images[0] ? images[0].url : '',
       tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumTracks(parent.id)
     }
   };
