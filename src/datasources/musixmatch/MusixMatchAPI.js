@@ -1,36 +1,42 @@
-const music = require('musicmatch')({apikey:process.env.MUSICMATCH_API_KEY});
+const { RESTDataSource, RequestOptions  } = require('apollo-datasource-rest')
 const R = require('rambda');
 
-class MusixMatchAPI {
-    getTrack = (isrc) => music.track({track_isrc: isrc});
-    hasLyrics = (track) => {
-        console.log(`track ${track.message.header.status_code}, ${track.message.body.track.has_lyrics}`);
-        return track.message.header.status_code == '200' && track.message.body.track.has_lyrics;
+class MusixMatchAPI extends RESTDataSource {
+    constructor() {
+        super();
+        this.baseURL = 'https://api.musixmatch.com/ws/1.1/';
     }
-    getLyrics = (track) => {
-        console.log(`getlyrivcs ${track.message.body.track.track_id}`);
-        return music.trackLyrics({
-            track_id: track.message.body.track.track_id
-        })
-    };
-    getCleanLyrics = (lyrics) => {
-        console.log(`lyrics ${JSON.stringify(lyrics.lyrics_body)}`);
-        return Promise.resolve(JSON.stringify(lyrics.lyrics_body));
-    };
-    getNoLyricsFound = () => Promise.resolve("no lyrics found");
     
+    willSendRequest(request) {
+        request.params.set('apikey', process.env.MUSICMATCH_API_KEY);
+    }
+
+    getLyricsByMusixMatchTrackId = async (id) => {
+        return this.get(`track.lyrics.get`, {track_id: id});
+    }
+
+    getNoLyricsFound = () => Promise.resolve("no lyrics found");
+
     getLyricsByIsrc = async (isrc) => {
-        const track = await this.getTrack(isrc);
-        //if (this.hasLyrics(track)) {
-        if (track.message.header.status_code == '200' && track.message.body.track.has_lyrics) {
-            const lyrics = await this.getLyrics(track);
-            return this.getCleanLyrics(lyrics);
+        const trackResponse = await this.get(`track.get`, {track_isrc: isrc});
+        const track = JSON.parse(trackResponse);
+        if (this.hasLyrics(track)) {
+            const lyrcsResponse = await this.getLyricsByMusixMatchTrackId(track.message.body.track.track_id);
+            const lyrics = JSON.parse(lyrcsResponse);
+            if (lyrics.message.header.status_code == `200`) {
+                return Promise.resolve(JSON.stringify(lyrics.message.body.lyrics.lyrics_body));
+            }
+            else {
+                return this.getNoLyricsFound();
+            }
 
         }
         else {
             return this.getNoLyricsFound();
         }
-    };
+    }
+
+    hasLyrics = (track) => !R.isNil(track) && track.message.header.status_code == '200' && track.message.body.track.has_lyrics;
 }
 
-module.exports = MusixMatchAPI
+module.exports = MusixMatchAPI;

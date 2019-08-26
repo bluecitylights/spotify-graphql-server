@@ -27,9 +27,9 @@
     "esm": "^3.2.25",
     "express": "4.17.1",
     "graphql": "14.4.2",
+    "graphql-resolvers": "^0.3.3",
     "graphql-tools": "4.0.5",
     "morgan": "1.9.1",
-    "musicmatch": "^0.3.2",
     "node-fetch": "2.6.0",
     "node-sass-middleware": "0.11.0",
     "rambda": "^3.0.1"

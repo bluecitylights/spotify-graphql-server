@@ -22,6 +22,9 @@ class SpotifyAPI extends RESTDataSource {
         return this.get(`me`);
     }
 
+    getPlayer = async () => Promise.resolve({})
+    getStatistics = async () => Promise.resolve({})
+
     getPlaylistsOfUser = async () => {
         const data = await this.get(`me/playlists`);
         return (data.items || []);
@@ -44,8 +47,38 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     getRecentlyPlayed = async () => {
+        console.log(`rcent`);
         const data = await this.get(`me/player/recently-played`);
         return R.pluck('track', data.items || []);
+    }
+        
+    getCurrentSong = async () => {
+        const data = await this.get(`me/player/currently-playing`);
+        return R.prop('item', data);
+    }
+
+    pause = async () => {
+        await this.put(`me/player/pause`);
+        return True;
+        
+    }
+
+    play = async () => {
+        await this.put(`me/player/play`);
+        const data = this.getCurrentSong();
+        return data;
+    }
+
+    next = async () => {
+        await this.post(`me/player/next`);
+        const data = await this.getCurrentSong();
+        return data;
+    }
+
+    previous = async () => {
+        await this.post(`me/player/previous`);
+        const data = await this.getCurrentSong();
+        return data;
     }
 
     getUserById = async (id) => {
