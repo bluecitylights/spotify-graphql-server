@@ -1,9 +1,43 @@
-import { combineResolvers } from 'graphql-resolvers';
+import { combineResolvers, pipeResolvers } from 'graphql-resolvers';
+import * as R from 'ramda'
 
 const isUserAuthenticated = (parent,args,ctx,info) => {
   if (!ctx.spotify.user_token) {
     return new Error('not authenticated');
   }
+}
+
+const getSearchArgs = (args, info) => {
+  const type = R.pipe(
+    R.prop('fieldNodes'), 
+    R.head, 
+    R.path(['selectionSet', 'selections']), 
+    R.map(R.path(['typeCondition', 'name', 'value'])), 
+    R.map(s => s.toLowerCase())
+  )(info);
+  
+  return {
+      text: args.text,
+      type: type.toString()
+    };
+}
+
+const resolveSearchResult = (obj) => {
+  if (obj.type == 'album'){
+   return 'Album';
+ }
+
+ if (obj.type == 'artist'){
+   return 'Artist';
+ }
+
+ if (obj.type == 'playlist'){
+   return 'Playlist';
+ }
+
+ if (obj.type == 'track'){
+   return 'Track';
+ }
 }
 
 const getMe = (parent, args, ctx) => ctx.dataSources.spotifyAPI.getMe();
@@ -17,7 +51,8 @@ const resolvers = {
       me: (parent, args, ctx) => combineResolvers(isUserAuthenticated, getMe),
       user: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getUserById(args.id),
       artists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.searchArtist(args.byName),
-      playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids)
+      playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids),
+      search: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.search(getSearchArgs(args, info))
     },
 
     Mutation: {
@@ -25,6 +60,12 @@ const resolvers = {
       pause: combineResolvers(isUserAuthenticated, pause),
       next: combineResolvers(isUserAuthenticated, next),
       previous: combineResolvers(isUserAuthenticated, previous)
+    },
+
+    SearchResult: {
+      __resolveType(obj, context, info) {
+        return resolveSearchResult(obj)
+      }  
     },
 
     PublicUser: {
