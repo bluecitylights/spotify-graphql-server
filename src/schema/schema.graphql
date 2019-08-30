@@ -1,10 +1,13 @@
 # The root of all queries:
 
+union SearchResult = Album | Artist | Playlist | Track
+
 type Query {
   me: User
   user(id: ID): PublicUser
   artists(byName: String = "Red Hot Chili Peppers"): [Artist]
   playlists(ids: [String]): [Playlist]
+  search(text: String!): [SearchResult]!
 }
 
 type Mutation {
@@ -41,13 +44,13 @@ type PublicUser {
 }
 type Artist {
   name: String!
-  id: ID
+  id: ID!
   image: String
   albums(limit: Int = 10): [Album]
 }
 type Album {
-  name: String
-  id: ID
+  name: String!
+  id: ID!
   image: String
   tracks: [Track]
 }
@@ -55,12 +58,12 @@ type Track {
   name: String!
   artists: [Artist]
   preview_url: String
-  id: ID
+  id: ID!
   lyrics: String
 },
 type Playlist {
-  name: String
-  id: ID,
+  name: String!
+  id: ID,!
   image: String
   collaborative: Boolean
   tracks: [Track]

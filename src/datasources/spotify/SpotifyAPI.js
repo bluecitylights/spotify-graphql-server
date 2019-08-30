@@ -1,5 +1,5 @@
 const { RESTDataSource, RequestOptions  } = require('apollo-datasource-rest')
-const R = require('rambda')
+const R = require('ramda')
 
 class SpotifyAPI extends RESTDataSource {
     constructor() {
@@ -115,7 +115,7 @@ class SpotifyAPI extends RESTDataSource {
         return (data.items || []);
     }
 
-    search = async (type, searchQuery) => {
+    _search = async (type, searchQuery) => {
         return this.get(`search`, {
              q: searchQuery,
              type: type
@@ -123,12 +123,20 @@ class SpotifyAPI extends RESTDataSource {
         return;
     }
 
-    searchArtist = async (searchQuery) => {
-        const data = await this.search('artist', searchQuery);
-        return (data.artists.items || []);
+    search = async(searchQuery) => {
+        const data = await this._search('artist,album,playlist,track', searchQuery);
+        const result = R.pipe(
+            R.props(['artists','albums','playlists','tracks']),
+            R.pluck('items'),
+            R.flatten
+        )(data);
+        return result
     }
 
-
+    searchArtist = async (searchQuery) => {
+        const data = await this._search('artist', searchQuery);
+        return (data.artists.items || []);
+    }
 }
 
 module.exports = SpotifyAPI

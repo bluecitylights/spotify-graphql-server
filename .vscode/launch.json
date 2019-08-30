@@ -8,7 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\src\\serverInit.js"
+            "program": "${workspaceFolder}\\src\\serverInit.js",
+            "runtimeArgs": ["-r", "esm"]
         }
     ]
 }

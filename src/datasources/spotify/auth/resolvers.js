@@ -1,5 +1,5 @@
 const fetch = require ('node-fetch');
-const R = require('rambda');
+const R = require('ramda');
 
 const client_credentials = require('./client_credentials');
 

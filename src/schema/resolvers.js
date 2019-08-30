@@ -1,4 +1,5 @@
 import { combineResolvers } from 'graphql-resolvers';
+import * as R from 'ramda'
 
 const isUserAuthenticated = (parent,args,ctx,info) => {
   if (!ctx.spotify.user_token) {
@@ -17,7 +18,8 @@ const resolvers = {
       me: (parent, args, ctx) => combineResolvers(isUserAuthenticated, getMe),
       user: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getUserById(args.id),
       artists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.searchArtist(args.byName),
-      playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids)
+      playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids),
+      search: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.search(args.text)
     },
 
     Mutation: {
@@ -25,6 +27,34 @@ const resolvers = {
       pause: combineResolvers(isUserAuthenticated, pause),
       next: combineResolvers(isUserAuthenticated, next),
       previous: combineResolvers(isUserAuthenticated, previous)
+    },
+
+    SearchResult: {
+      __resolveType(obj, context, info) {
+        if (obj.type == 'album'){
+          return 'Album';
+        }
+
+        if (obj.type == 'artist'){
+          return 'Artist';
+        }
+
+        if (obj.type == 'playlist'){
+          return 'Playlist';
+        }
+
+        if (obj.type == 'track'){
+          return 'Track';
+        }
+      }  
+        //        return R.cond([
+//           [R.propEq('type', 'album'), R.always('Album')]
+//           [R.propEq('type', 'artist'), R.always('Artists')]
+//           [R.propEq('type', 'playlist'), R.always('Playlist')]
+//           [R.propEq('type', 'track'), R.always('Track')]
+//         ])(obj)
+//       }
+//      }
     },
 
     PublicUser: {

@@ -21,6 +21,8 @@ const getDataSources = () => {
   };
 };
 
+haveToken().then(console.log);
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,

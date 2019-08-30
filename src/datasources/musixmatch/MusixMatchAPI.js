@@ -1,5 +1,5 @@
 const { RESTDataSource, RequestOptions  } = require('apollo-datasource-rest')
-const R = require('rambda');
+const R = require('ramda');
 
 class MusixMatchAPI extends RESTDataSource {
     constructor() {
