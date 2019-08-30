@@ -12,6 +12,9 @@ const getSearchArgs = (args, info) => {
     R.prop('fieldNodes'), 
     R.head, 
     R.path(['selectionSet', 'selections']), 
+    // when querying __typename, selections contains more than fields specified in ...Artists{id name}. 
+    // solved by filtering on inlinefragment. todo see if we need the filter to be even more strict
+    R.filter(R.propEq('kind', 'InlineFragment')), 
     R.map(R.path(['typeCondition', 'name', 'value'])), 
     R.map(s => s.toLowerCase())
   )(info);
