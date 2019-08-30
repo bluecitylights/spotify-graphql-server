@@ -124,9 +124,10 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     search = async(searchQuery) => {
-        const data = await this._search('artist,album,playlist,track', searchQuery);
+        const data = await this._search(searchQuery.type, searchQuery.text);
         const result = R.pipe(
             R.props(['artists','albums','playlists','tracks']),
+            R.filter(R.complement(R.isNil)),
             R.pluck('items'),
             R.flatten
         )(data);

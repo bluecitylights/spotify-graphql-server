@@ -1,10 +1,43 @@
-import { combineResolvers } from 'graphql-resolvers';
+import { combineResolvers, pipeResolvers } from 'graphql-resolvers';
 import * as R from 'ramda'
 
 const isUserAuthenticated = (parent,args,ctx,info) => {
   if (!ctx.spotify.user_token) {
     return new Error('not authenticated');
   }
+}
+
+const getSearchArgs = (args, info) => {
+  const type = R.pipe(
+    R.prop('fieldNodes'), 
+    R.head, 
+    R.path(['selectionSet', 'selections']), 
+    R.map(R.path(['typeCondition', 'name', 'value'])), 
+    R.map(s => s.toLowerCase())
+  )(info);
+  
+  return {
+      text: args.text,
+      type: type.toString()
+    };
+}
+
+const resolveSearchResult = (obj) => {
+  if (obj.type == 'album'){
+   return 'Album';
+ }
+
+ if (obj.type == 'artist'){
+   return 'Artist';
+ }
+
+ if (obj.type == 'playlist'){
+   return 'Playlist';
+ }
+
+ if (obj.type == 'track'){
+   return 'Track';
+ }
 }
 
 const getMe = (parent, args, ctx) => ctx.dataSources.spotifyAPI.getMe();
@@ -19,7 +52,7 @@ const resolvers = {
       user: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getUserById(args.id),
       artists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.searchArtist(args.byName),
       playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids),
-      search: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.search(args.text)
+      search: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.search(getSearchArgs(args, info))
     },
 
     Mutation: {
@@ -31,30 +64,8 @@ const resolvers = {
 
     SearchResult: {
       __resolveType(obj, context, info) {
-        if (obj.type == 'album'){
-          return 'Album';
-        }
-
-        if (obj.type == 'artist'){
-          return 'Artist';
-        }
-
-        if (obj.type == 'playlist'){
-          return 'Playlist';
-        }
-
-        if (obj.type == 'track'){
-          return 'Track';
-        }
+        return resolveSearchResult(obj)
       }  
-        //        return R.cond([
-//           [R.propEq('type', 'album'), R.always('Album')]
-//           [R.propEq('type', 'artist'), R.always('Artists')]
-//           [R.propEq('type', 'playlist'), R.always('Playlist')]
-//           [R.propEq('type', 'track'), R.always('Track')]
-//         ])(obj)
-//       }
-//      }
     },
 
     PublicUser: {
