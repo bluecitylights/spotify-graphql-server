@@ -26,22 +26,13 @@ const getSearchArgs = (args, info) => {
 }
 
 const resolveSearchResult = (obj) => {
-  if (obj.type == 'album'){
-   return 'Album';
- }
-
- if (obj.type == 'artist'){
-   return 'Artist';
- }
-
- if (obj.type == 'playlist'){
-   return 'Playlist';
- }
-
- if (obj.type == 'track'){
-   return 'Track';
- }
-}
+  return R.cond([
+    [R.propEq('type', 'artist'), R.always('Artist')], 
+    [R.propEq('type', 'album'), R.always('Album')],
+    [R.propEq('type', 'playlist'), R.always('Playlist')],
+    [R.propEq('type', 'track'), R.always('Track')]
+  ])(obj);
+}  
 
 const getMe = (parent, args, ctx) => ctx.dataSources.spotifyAPI.getMe();
 const play = (parent, args, ctx) => ctx.dataSources.spotifyAPI.play();
