@@ -16,7 +16,7 @@ const getSearchArgs = (args, info) => {
     // solved by filtering on inlinefragment. todo see if we need the filter to be even more strict
     R.filter(R.propEq('kind', 'InlineFragment')), 
     R.map(R.path(['typeCondition', 'name', 'value'])), 
-    R.map(s => s.toLowerCase())
+    R.map(R.toLower)
   )(info);
   
   return {
