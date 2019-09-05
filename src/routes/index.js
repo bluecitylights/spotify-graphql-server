@@ -11,7 +11,7 @@ router.get('/', function(req, res) {
 });
 
 let redirect_uri = 
-  process.env.SPOTIFY_REDIRECT_URI || 
+process.env.SPOTIFY_REDIRECT_URI || 
   'http://localhost:4000/callback'
 
   router.get('/login', function(req, res) {
@@ -24,7 +24,7 @@ let redirect_uri =
     querystring.stringify({
       response_type: 'code',
       client_id: process.env.SPOTIFY_CLIENT_ID,
-      scope: 'user-read-private user-read-email',
+      scope: process.env.SPOTIFY_SCOPES,
       redirect_uri,
       state: state
     }));
