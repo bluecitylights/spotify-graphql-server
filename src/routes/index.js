@@ -11,7 +11,7 @@ router.get('/', function(req, res) {
 });
 
 let redirect_uri = 
-  process.env.REDIRECT_URI || 
+  process.env.SPOTIFY_REDIRECT_URI || 
   'http://localhost:4000/callback'
 
   router.get('/login', function(req, res) {
