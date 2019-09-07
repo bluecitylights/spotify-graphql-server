@@ -19,6 +19,7 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     getMe = async () => {
+        console.log('getne')
         return this.get(`me`);
     }
 

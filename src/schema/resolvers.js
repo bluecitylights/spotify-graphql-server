@@ -3,7 +3,8 @@ import * as R from 'ramda'
 
 const isUserAuthenticated = (parent,args,ctx,info) => {
   if (!ctx.spotify.user_token) {
-    return new Error('not authenticated');
+    console.log('Error, not authenticaed')
+    return new Error('NOT authenticated');
   }
 }
 
@@ -42,7 +43,7 @@ const previous = (parent, args, ctx) => ctx.dataSources.spotifyAPI.previous();
 
 const resolvers = {
     Query: {
-      me: (parent, args, ctx) => combineResolvers(isUserAuthenticated, getMe),
+      me: combineResolvers(isUserAuthenticated, getMe),
       user: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getUserById(args.id),
       artists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.searchArtist(args.byName),
       playlists: async(parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsById(args.ids),
@@ -70,6 +71,7 @@ const resolvers = {
       tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getPlaylistTracks(parent.id)
     },
     User: {
+      image: ({images}) => images ? images[0].url : '',
       playlists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsOfUser(),
       stats: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getStatistics(),
       player: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlayer()
