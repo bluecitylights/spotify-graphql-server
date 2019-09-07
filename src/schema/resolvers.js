@@ -41,6 +41,9 @@ const pause = (parent, args, ctx) => ctx.dataSources.spotifyAPI.pause();
 const next = (parent, args, ctx) => ctx.dataSources.spotifyAPI.next();
 const previous = (parent, args, ctx) => ctx.dataSources.spotifyAPI.previous();
 
+const getImage = (images) => {
+  return images && images[0] ? images[0].url : ""
+}
 const resolvers = {
     Query: {
       me: combineResolvers(isUserAuthenticated, getMe),
@@ -67,11 +70,11 @@ const resolvers = {
       playlists: async ({id},args,ctx) => ctx.dataSources.spotifyAPI.getPlaylistsByUserId(id)
     },
     Playlist: {
-      image: ({images}) => images[0] ? images[0].url : '',
+      image: ({images}) => getImage(images),
       tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getPlaylistTracks(parent.id)
     },
     User: {
-      image: ({images}) => images ? images[0].url : '',
+      image: ({images}) => getImage(images),
       playlists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsOfUser(),
       stats: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getStatistics(),
       player: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlayer()
@@ -98,11 +101,11 @@ const resolvers = {
       }
     },
     Artist: {
-      image: ({images}) => images[0] ? images[0].url : '',
+      image: ({images}) => getImage(images),
       albums: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumsForArtist(parent.id)
     },
     Album: {
-      image: ({images}) => images[0] ? images[0].url : '',
+      image: ({images}) => getImage(images),
       tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getAlbumTracks(parent.id)
     }
   };
