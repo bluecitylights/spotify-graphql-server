@@ -98,6 +98,9 @@ const resolvers = {
     Track: {
       lyrics: async (parent, args, ctx) => {
         return ctx.dataSources.musixMatchAPI.getLyricsByIsrc(parent.external_ids["isrc"]);
+      },
+      image: (parent,args,ctx,info) => {
+        return getImage(parent.album.images);
       }
     },
     Artist: {

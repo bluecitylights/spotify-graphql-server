@@ -60,6 +60,7 @@ type Track {
   preview_url: String
   id: ID!
   lyrics: String
+  image: String
 },
 type Playlist {
   name: String!
