@@ -36,7 +36,7 @@ const resolveSearchResult = (obj) => {
 }  
 
 const getMe = (parent, args, ctx) => ctx.dataSources.spotifyAPI.getMe();
-const play = (parent, args, ctx) => ctx.dataSources.spotifyAPI.play();
+const play = (parent, args, ctx) => ctx.dataSources.spotifyAPI.play(args.context_uri);
 const pause = (parent, args, ctx) => ctx.dataSources.spotifyAPI.pause();
 const next = (parent, args, ctx) => ctx.dataSources.spotifyAPI.next();
 const previous = (parent, args, ctx) => ctx.dataSources.spotifyAPI.previous();

@@ -11,7 +11,7 @@ type Query {
 }
 
 type Mutation {
-  play: Track,
+  play(context_uri: String): Track,
   pause: Boolean,
   next: Track,
   previous: Track 
