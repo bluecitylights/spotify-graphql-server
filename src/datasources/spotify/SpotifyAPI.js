@@ -19,11 +19,14 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     getMe = async () => {
-        console.log('getne')
         return this.get(`me`);
     }
 
-    getPlayer = async () => Promise.resolve({})
+    getPlayer = async () => {
+        const data = await this.get(`me/player`);
+        return data;
+    }
+
     getStatistics = async () => Promise.resolve({})
 
     getPlaylistsOfUser = async () => {
@@ -59,26 +62,29 @@ class SpotifyAPI extends RESTDataSource {
     }
 
     pause = async () => {
+        const data = await this.getCurrentSong();
         await this.put(`me/player/pause`);
-        return True;
-        
+        return data;
     }
 
     play = async (context_uri) => {
         const body = context_uri ? { context_uri} : {}
         await this.put(`me/player/play`, body);
+        await new Promise(done => setTimeout(done, 500)); 
         const data = this.getCurrentSong();
         return data;
     }
 
     next = async () => {
         await this.post(`me/player/next`);
-        const data = await this.getCurrentSong();
+        await new Promise(done => setTimeout(done, 500)); 
+        const data = await this.getCurrentSong(); // todo: validate that we ccidentally have next song
         return data;
     }
 
     previous = async () => {
         await this.post(`me/player/previous`);
+        await new Promise(done => setTimeout(done, 500)); 
         const data = await this.getCurrentSong();
         return data;
     }
