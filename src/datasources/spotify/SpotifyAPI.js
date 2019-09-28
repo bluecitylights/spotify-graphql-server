@@ -67,8 +67,15 @@ class SpotifyAPI extends RESTDataSource {
         return data;
     }
 
-    play = async (context_uri) => {
-        const body = context_uri ? { context_uri} : {}
+    play = async ({context_uri, track_uris}) => {
+        let body = {}
+        if (track_uris) {
+            body = {uris: track_uris}
+        }
+        else if (context_uri) {
+            body = {context_uri}
+        }
+        
         await this.put(`me/player/play`, body);
         await new Promise(done => setTimeout(done, 500)); 
         const data = this.getCurrentSong();

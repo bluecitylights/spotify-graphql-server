@@ -11,7 +11,7 @@ type Query {
 }
 
 type Mutation {
-  play(context_uri: String): Track,
+  play(playContext: PlayContext): Track,
   pause: Track,
   next: Track,
   previous: Track 
@@ -73,4 +73,9 @@ enum TimeRange {
   short_term
   medium_term
   long_term
+}
+
+input PlayContext {
+  context_uri: String
+  track_uris: [String]
 }
