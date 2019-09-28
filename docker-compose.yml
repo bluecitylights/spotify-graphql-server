@@ -1,0 +1,13 @@
+# docker-compose -f docker-compose.yml up -d --build
+version: '3.7'
+
+services:
+
+  spotify-graphql-server:
+    container_name: spotify-graphql-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000'
+
