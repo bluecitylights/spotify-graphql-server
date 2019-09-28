@@ -20,6 +20,7 @@ type Mutation {
 type User {
   display_name: String
   id: ID
+  followers: Int
   image: String
   playlists(limit: Int = 5, offset: Int = 0): [Playlist]
   stats: Statistics
@@ -40,6 +41,7 @@ type PublicUser {
   display_name: String
   id: ID
   image: String
+  followers: Int
   playlists(limit: Int = 5, offset: Int = 0): [Playlist]
 }
 type Artist {
@@ -67,6 +69,9 @@ type Playlist {
   id: ID,!
   image: String
   collaborative: Boolean
+  followers: Int
+  description: String
+  owner: User
   tracks: [Track]
 }
 enum TimeRange {

@@ -67,9 +67,11 @@ const resolvers = {
     },
 
     PublicUser: {
-      playlists: async ({id},args,ctx) => ctx.dataSources.spotifyAPI.getPlaylistsByUserId(id)
+      playlists: async ({id},args,ctx) => ctx.dataSources.spotifyAPI.getPlaylistsByUserId(id),
+      followers: (parent,args, ctx, info) => parent.followers.total,
     },
     Playlist: {
+      followers: (parent,args, ctx, info) => parent.followers.total,
       image: ({images}) => getImage(images),
       tracks: async (parent, args, ctx) => ctx.dataSources.spotifyAPI.getPlaylistTracks(parent.id)
     },
@@ -77,7 +79,8 @@ const resolvers = {
       image: ({images}) => getImage(images),
       playlists: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlaylistsOfUser(),
       stats: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getStatistics(),
-      player: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlayer()
+      player: (parent,args,ctx,info) => ctx.dataSources.spotifyAPI.getPlayer(),
+      followers: (parent,args, ctx, info) => parent.followers ? parent.followers.total : null
     },
     Statistics: {
       topArtists: (parent,args,ctx,info) => {
