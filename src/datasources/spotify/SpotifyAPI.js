@@ -58,7 +58,12 @@ class SpotifyAPI extends RESTDataSource {
         
     getCurrentSong = async () => {
         const data = await this.get(`me/player/currently-playing`);
-        return R.prop('item', data);
+        const item = R.prop('item', data)
+        const progress_ms = R.prop('progress_ms', data)
+        return { 
+            ...item,
+            progress_ms
+        }
     }
 
     pause = async () => {

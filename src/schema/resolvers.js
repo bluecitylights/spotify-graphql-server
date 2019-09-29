@@ -99,6 +99,8 @@ const resolvers = {
       }
     },
     Track: {
+      progress: (parent) => parent.progress_ms,
+      duration: (parent) => parent.duration_ms,
       lyrics: async (parent, args, ctx) => {
         return ctx.dataSources.musixMatchAPI.getLyricsByIsrc(parent.external_ids["isrc"]);
       },
