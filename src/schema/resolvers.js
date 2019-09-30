@@ -102,7 +102,8 @@ const resolvers = {
       progress: (parent) => parent.progress_ms,
       duration: (parent) => parent.duration_ms,
       lyrics: async (parent, args, ctx) => {
-        return ctx.dataSources.musixMatchAPI.getLyricsByIsrc(parent.external_ids["isrc"]);
+        return ctx.dataSources.dvoxLyrics.getLyricsByArtistsAndTitle(parent.artists[0].name, parent.name)
+          .catch(e => ctx.dataSources.musixMatchAPI.getLyricsByIsrc(parent.external_ids["isrc"]))
       },
       image: (parent,args,ctx,info) => {
         return getImage(parent.album.images);

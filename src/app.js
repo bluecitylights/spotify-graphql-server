@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const SpotifyAPI = require('./datasources/spotify/SpotifyAPI');
 const MusixMatchAPI = require('./datasources/musixmatch/MusixMatchAPI');
+const dvoxLyrics = require('./datasources/dvoxLyrics/dvoxLyrics');
 const routes = require('./routes/index');
 const {resolvers} = require('./schema/resolvers');
 const {typeDefs} = require('./schema/typeDefs');
@@ -17,7 +18,8 @@ const app = express();
 const getDataSources = () => {
   return {
     spotifyAPI: new SpotifyAPI(),
-    musixMatchAPI: new MusixMatchAPI()
+    musixMatchAPI: new MusixMatchAPI(),
+    dvoxLyrics: new dvoxLyrics()
   };
 };
 
