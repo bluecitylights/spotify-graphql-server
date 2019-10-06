@@ -1,3 +1,5 @@
+require('@google-cloud/trace-agent').start();
+
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
@@ -12,6 +14,7 @@ const {resolvers} = require('./schema/resolvers');
 const {typeDefs} = require('./schema/typeDefs');
 const {haveToken} = require('./datasources/spotify/auth/resolvers');
 const {ApolloServer} = require('apollo-server-express');
+
 
 const app = express();
 
