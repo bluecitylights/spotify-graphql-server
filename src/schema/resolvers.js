@@ -105,6 +105,9 @@ const resolvers = {
         return ctx.dataSources.dvoxLyrics.getLyricsByArtistsAndTitle(parent.artists[0].name, parent.name)
           .catch(e => ctx.dataSources.musixMatchAPI.getLyricsByIsrc(parent.external_ids["isrc"]))
       },
+      youtubeId: async(parent, args, ctx) => {
+        return ctx.dataSources.youtubeAPI.getYoutubeidByArtistAndTitle(parent.artists[0].name, parent.name)
+      },
       image: (parent,args,ctx,info) => {
         return getImage(parent.album.images);
       }

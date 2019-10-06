@@ -62,6 +62,7 @@ type Track {
   preview_url: String
   id: ID!
   lyrics: String
+  youtubeId: ID
   image: String
   duration: Int
   progress: Int

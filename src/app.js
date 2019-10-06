@@ -7,19 +7,20 @@ const cors = require('cors');
 const SpotifyAPI = require('./datasources/spotify/SpotifyAPI');
 const MusixMatchAPI = require('./datasources/musixmatch/MusixMatchAPI');
 const dvoxLyrics = require('./datasources/dvoxLyrics/dvoxLyrics');
+const youtubeAPI = require('./datasources/youtubeApi/youtubeApi')
 const routes = require('./routes/index');
 const {resolvers} = require('./schema/resolvers');
 const {typeDefs} = require('./schema/typeDefs');
 const {haveToken} = require('./datasources/spotify/auth/resolvers');
 const {ApolloServer} = require('apollo-server-express');
-
 const app = express();
 
 const getDataSources = () => {
   return {
     spotifyAPI: new SpotifyAPI(),
     musixMatchAPI: new MusixMatchAPI(),
-    dvoxLyrics: new dvoxLyrics()
+    dvoxLyrics: new dvoxLyrics(),
+    youtubeAPI: new youtubeAPI()
   };
 };
 
